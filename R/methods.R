@@ -27,7 +27,7 @@ plot.vennvis <- function(vv) {
   opt <- par(mar = c(0,0,0,0))
   plot(0, 0, type = "n",
        xlim = c(-1.5*sx, 0.5*sx+sy+d),
-       ylim = c(-1.5*sx, 1.5*sx), asp = 1, bty = "L")
+       ylim = c(-1.5*sx, 1.5*sx), asp = 1, bty = "L", axes = F)
   lines(x = sx*cos(theta), y = sx*sin(theta), lwd = 2)
   lines(x = sy*cos(theta)+d, y = sy*sin(theta), lwd = 2)
   text(x = -sx, y = sx, labels = vv$nx, cex = 1.5)
