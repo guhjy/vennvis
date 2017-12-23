@@ -5,3 +5,11 @@ It's simple: the area of each circle is proportional to a variable's variance, t
 ```r
 devtools::install_github("vankesteren/vennvis")
 ```
+
+# Example
+
+```r
+vennvis(iris$Sepal.Width, iris$Petal.Width)
+```
+
+![](example.png)
