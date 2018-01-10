@@ -4,8 +4,8 @@
 \alias{vennvis}
 \title{Visualise the relation between two variables as circles}
 \usage{
-vennvis(x, y, scale = FALSE, prec = 400, plot = TRUE, names = TRUE,
-  points = FALSE)
+vennvis(x, y, z, scale = FALSE, plot = FALSE, precision = 400,
+  axes = FALSE)
 }
 \arguments{
 \item{x}{a base variable (vector)}
@@ -14,13 +14,9 @@ vennvis(x, y, scale = FALSE, prec = 400, plot = TRUE, names = TRUE,
 
 \item{scale}{whether to scale the variables}
 
-\item{prec}{the precision of the drawing and the numerical optimisation}
-
 \item{plot}{whether to plot, default TRUE}
 
-\item{names}{display the names of the variables, default TRUE}
-
-\item{points}{plot informative points, default FALSE}
+\item{precision}{the precision of the drawing}
 }
 \description{
 Using a venn diagram where the overlap indicates the covariance between two

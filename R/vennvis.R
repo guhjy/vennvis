@@ -1,7 +1,47 @@
+#' Visualise the relation between two variables as circles
+#'
+#' Using a venn diagram where the overlap indicates the covariance between two
+#' variables and the area of the circles indicates the variance of each.
+#'
+#' @param x a base variable (vector)
+#' @param y a comparison variable (vector)
+#' @param scale whether to scale the variables
+#' @param plot whether to plot, default TRUE
+#' @param precision the precision of the drawing
+#'
+#'
+#' @export
+#'
+vennvis <- function(x, y, z, scale = FALSE,
+                    plot = TRUE, precision = 400, axes = FALSE,
+                    triangle = FALSE) {
+  # check for errors in the arguments
+  .args <- as.list(match.call()[-1]) # use inner 1
+  check <- do.call(checkArgs, .args)
+  if (!is.na(check)) {
+    stop(check)
+  }
+
+  vv <- calcVennVis(x, y, z, scale, match.call())
+  vv$plotpars <- list(
+    precision = precision,
+    axes = axes,
+    triangle = triangle
+  )
+
+  if (plot) {
+    plot(vv)
+    return(invisible(vv))
+  } else {
+    return(vv)
+  }
+}
+
 #' Distance calculation function
 #'
 #' @keywords internal
-calculateDistance <- function(rx, ry, cov, precision = 1000) {
+#'
+calcDist <- function(rx, ry, cov, precision = 1000) {
   # Dalculate distance between centers such that area == cov
   # Function adapted from
   # Weisstein, Eric W. "Circle-Circle Intersection."
@@ -17,73 +57,104 @@ calculateDistance <- function(rx, ry, cov, precision = 1000) {
   ds[which.min(dvals)]
 }
 
-#' Visualise the relation between two variables as circles
+
+#' Vennvis object creation
 #'
-#' Using a venn diagram where the overlap indicates the covariance between two
-#' variables and the area of the circles indicates the variance of each.
+#' @keywords internal
 #'
-#' @param x a base variable (vector)
-#' @param y a comparison variable (vector)
-#' @param scale whether to scale the variables
-#' @param prec the precision of the drawing and the numerical optimisation
-#' @param plot whether to plot, default TRUE
-#' @param names display the names of the variables, default TRUE
-#' @param points plot informative points, default FALSE
-#'
-#' @export
-#'
-vennvis <- function(x, y, scale = FALSE, prec = 400, plot = TRUE,
-                    names = TRUE, points = FALSE) {
-  if (scale) {
-    xs <- scale(x)
-    ys <- scale(y)
-    sx <- sd(xs)
-    sy <- sd(ys)
-    xy <- abs(cor(x, y))
-  } else {
-    sx <- sd(x)
-    sy <- sd(y)
-    xy <- abs(cov(x, y))
+calcVennVis <- function(x, y, z, scale = FALSE, call = NULL) {
+
+  if (is.null(call)) {
+    call <- match.call()
   }
 
-  d <- calculateDistance(sx, sy, pi*xy, 2*prec)
+  if (missing(z)) {
 
-  theta <- seq(0, 2*pi, length.out = prec)
-
-
-  nx <- deparse(substitute(x))
-  ny <- deparse(substitute(y))
-  if (plot) {
-    opt <- par(mar = c(0,0,0,0))
-    plot(0, 0, type = "n",
-         xlim = c(-1.5*sx, 0.5*sx+sy+d),
-         ylim = c(-1.5*sx, 1.5*sx), asp = 1, bty = "L", axes = F)
-    lines(x = sx*cos(theta), y = sx*sin(theta), lwd = 2)
-    lines(x = sy*cos(theta)+d, y = sy*sin(theta), lwd = 2)
-    if (names) {
-      text(x = -sx, y = sx, labels = nx, cex = 1.5)
-      text(x = sy+d, y = sy, labels = ny, cex = 1.5)
+    if (scale) {
+      x <- as.vector(scale(x))
+      y <- as.vector(scale(y))
     }
-    if (points)
-      points(c(0,d,sx-d, sx+2*sy-d), c(0,0,0,0), pch = 21, bg = "black")
-    par(opt)
+
+    # calculate overlap and radii
+    cm <- cov(x, y)
+    r <- c(sd(x), sd(y))
+    names(r) <- c("x", "y")
+    dxy <- calcDist(r["x"], r["y"], cm*pi)
+    cx <- c(0, 0)
+    cy <- c(cx[1] + dxy, cx[2])
+
+    out <- list(
+      nvars = 2L,
+      distances = list(xy = dxy),
+      centers = list(x = cx, y = cy),
+      radii = list(x = r["x"], y = r["y"]),
+      covar = cm
+    )
+
+  } else {
+
+    if (scale) {
+      x <- as.vector(scale(x))
+      y <- as.vector(scale(y))
+      z <- as.vector(scale(z))
+    }
+
+    # calculate overlaps and radii
+    cm <- cov(cbind(x = x, y = y, z = z))
+    r <- sqrt(diag(cm))
+
+    # calculate distances
+    dxy <- calcDist(r["x"], r["y"], cm["x", "y"]*pi)
+    dxz <- calcDist(r["x"], r["z"], cm["x", "z"]*pi)
+    dyz <- calcDist(r["y"], r["z"], cm["y", "z"]*pi)
+
+    # calculate centers
+    cx <- c(0, 0)
+    cy <- c(cx[1] + dxy, cx[2])
+
+    if (dxz + dyz < dxy) {
+
+      warning("Third center could not be calculated,",
+              " 3-circle plot not possible.\n",
+              "Possibly, one cov is small and the other two are large.",
+              "\nTry cov(cbind(x, y, z)) to inspect.")
+
+      out <- list(
+        nvars = 2L,
+        distances = list(xy = dxy),
+        centers = list(x = cx, y = cy),
+        radii = list(x = r["x"], y = r["y"]),
+        covar = cov(x, y)
+      )
+
+    } else {
+
+      cosax <- (dxz^2+dxy^2-dyz^2)/(2*dxz*dxy)
+      sinax <- sin(acos(cosax))
+      cz <- c(cx[1] + cosax * dxz, cx[2] - sinax * dxz)
+
+      out <- list(
+        nvars = 3L,
+        distances = list(xy = dxy, xz = dxz, yz = dyz),
+        centers = list(x = cx, y = cy, z = cz),
+        radii = list(x = r["x"], y = r["y"], z = r["z"]),
+        covar = cm
+      )
+
+    }
   }
 
-  out <- list(
-    rx = sx,
-    ry = sy,
-    xy = xy,
-    d = d,
-    ax = pi*sx^2,
-    ay = pi*sy^2,
-    axy = pi*xy,
-    nx = nx,
-    ny = ny,
-    scaled = scale,
-    prec = prec
-  )
-
-  class(out) <- "vennvis"
-  invisible(out)
+  # return a vennvis object with the call included
+  return(structure(out, call = call, class = "vennvis"))
 }
+
+#' Argument checking
+#'
+#' @keywords internal
+#'
+checkArgs <- function(...) {
+  # TODO: argument checking
+  return(NA)
+}
+
 
