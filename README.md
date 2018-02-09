@@ -24,3 +24,8 @@ z <- 0.3*x+0.4*y+rnorm(100, 0.15)
 vennvis(x, y, z)
 ```
 ![](example2.png)
+
+
+# Ok cool, what's next?
+
+Visual upgrades are on their way. Also, variable labels might be nice. Much to do. If you're interested in contributing, don't hesitate to fork, clone, or pull request. Any tips welcome!
