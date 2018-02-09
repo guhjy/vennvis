@@ -5,9 +5,12 @@
 #'
 #' @param x a base variable (vector)
 #' @param y a comparison variable (vector)
+#' @param z an optional third variable (vector)
 #' @param scale whether to scale the variables
 #' @param plot whether to plot, default TRUE
 #' @param precision the precision of the drawing
+#' @param axes whether to plot axes
+#' @param triangle whether to add a triangle to the plot (only for 3 vars)
 #'
 #'
 #' @export
@@ -16,7 +19,7 @@ vennvis <- function(x, y, z, scale = FALSE,
                     plot = TRUE, precision = 400, axes = FALSE,
                     triangle = FALSE) {
   # check for errors in the arguments
-  .args <- as.list(match.call()[-1]) # use inner 1
+  .args <- as.list(match.call()[-1])
   check <- do.call(checkArgs, .args)
   if (!is.na(check)) {
     stop(check)

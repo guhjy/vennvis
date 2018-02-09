@@ -1,12 +1,14 @@
 #' Print method
 #'
-#' @rdname vennvis-methods
+#' @param x a vennvis object returned from vennvis() call
+#' @param ... any other args
+#'
 #'
 #' @export
-print.vennvis <- function(vv) {
+print.vennvis <- function(x, ...) {
   cat("VennVis Object\ncall: ")
-  print(attr(vv, "call"))
-  str(vv, give.attr = FALSE,
+  print(attr(x, "call"))
+  str(x, give.attr = FALSE,
       give.head = FALSE,
       no.list = TRUE)
 }
@@ -14,12 +16,19 @@ print.vennvis <- function(vv) {
 
 #' Replot method
 #'
-#' @rdname vennvis-methods
+#' @param x a vennvis object returned from vennvis() call
+#' @param ... any other args
 #'
 #' @export
-plot.vennvis <- function(vv) {
-  if (!vv$plotpars$axes) opt <- par(mar = c(0,0,0,0))
-  theta <- seq(0,2*pi, length.out = vv$plotpars$precision)
+plot.vennvis <- function(x, ...) {
+  vv <- x
+  if (!vv$plotpars$axes) {
+    boxtype <- "n"
+    opt <- par(mar = c(0,0,0,0))
+  } else {
+    boxtype <- "L"
+  }
+  theta <- seq(0, 2 * pi, length.out = vv$plotpars$precision)
 
   if (vv$nvars == 2) {
 
@@ -53,11 +62,13 @@ plot.vennvis <- function(vv) {
 
     # triangle
     if (vv$plotpars$triangle) {
-      points(x = c(cx[1], cy[1], cz[1]),
-             y = c(cx[2], cy[2], cz[2]),
+      points(x = c(vv$centers$x[1], vv$centers$y[1], vv$centers$z[1]),
+             y = c(vv$centers$x[2], vv$centers$y[2], vv$centers$z[2]),
              pch = 21, bg = "black")
-      lines(x = c(cx[1], cy[1], cz[1], cx[1]),
-            y = c(cx[2], cy[2], cz[2], cx[2]))
+      lines(x = c(vv$centers$x[1], vv$centers$y[1],
+                  vv$centers$z[1], vv$centers$x[1]),
+            y = c(vv$centers$x[2], vv$centers$y[2],
+                  vv$centers$z[2], vv$centers$x[2]))
     }
 
   }

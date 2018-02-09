@@ -12,11 +12,17 @@ vennvis(x, y, z, scale = FALSE, plot = TRUE, precision = 400,
 
 \item{y}{a comparison variable (vector)}
 
+\item{z}{an optional third variable (vector)}
+
 \item{scale}{whether to scale the variables}
 
 \item{plot}{whether to plot, default TRUE}
 
 \item{precision}{the precision of the drawing}
+
+\item{axes}{whether to plot axes}
+
+\item{triangle}{whether to add a triangle to the plot (only for 3 vars)}
 }
 \description{
 Using a venn diagram where the overlap indicates the covariance between two
