@@ -4,8 +4,8 @@
 \alias{vennvis}
 \title{Visualise the relation between two variables as circles}
 \usage{
-vennvis(x, y, z, scale = FALSE, plot = FALSE, precision = 400,
-  axes = FALSE)
+vennvis(x, y, z, scale = FALSE, plot = TRUE, precision = 400,
+  axes = FALSE, triangle = FALSE)
 }
 \arguments{
 \item{x}{a base variable (vector)}
