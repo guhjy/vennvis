@@ -36,7 +36,8 @@ plot.vennvis <- function(x, ...) {
     plot(0, 0, type = "n",
          xlim = c(-1.5 * vv$radii$x,
                   0.5*vv$radii$x + vv$centers$y[1] + vv$radii$y),
-         ylim = c(-1.5 * vv$radii$x, 1.5 * vv$radii$x), asp = 1, bty = "L")
+         ylim = c(-1.5 * vv$radii$x, 1.5 * vv$radii$x), asp = 1,
+         bty = boxtype, axes = vv$plotpars$axes)
 
     # draw circles
     lines(x = vv$radii$x*cos(theta) + vv$centers$x[1],
@@ -60,7 +61,7 @@ plot.vennvis <- function(x, ...) {
                   0.5*vv$radii$x + vv$centers$y[1] + vv$radii$y),
          ylim = c(-0.5*vv$radii$x + vv$centers$z[2] - vv$radii$z,
                   max(1.5*vv$radii$x, 0.5*vv$radii$x + vv$radii$y)),
-         asp = 1, bty = "L", axes = vv$plotpars$axes, xlab = "", ylab = "")
+         asp = 1, bty = boxtype, axes = vv$plotpars$axes, xlab = "", ylab = "")
 
     # draw circles
     lines(x = vv$radii$x*cos(theta) + vv$centers$x[1],
