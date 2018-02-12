@@ -4,27 +4,41 @@
 \alias{vennvis}
 \title{Visualise the relation between two variables as circles}
 \usage{
-vennvis(x, y, z, scale = FALSE, plot = TRUE, precision = 400,
-  axes = FALSE, triangle = FALSE)
+vennvis(x, y, z, scale = FALSE, plot = TRUE, plotOpts)
 }
 \arguments{
-\item{x}{a base variable (vector)}
+\item{x}{a base variable or a matrix/data frame with 2/3 variables}
 
-\item{y}{a comparison variable (vector)}
+\item{y}{a comparison variable}
 
-\item{z}{an optional third variable (vector)}
+\item{z}{an optional third variable}
 
 \item{scale}{whether to scale the variables}
 
 \item{plot}{whether to plot, default TRUE}
 
-\item{precision}{the precision of the drawing}
-
-\item{axes}{whether to plot axes}
-
-\item{triangle}{whether to add a triangle to the plot (only for 3 vars)}
+\item{plotOpts}{named list of custom plot options; see details}
 }
 \description{
 Using a venn diagram where the overlap indicates the covariance between two
 variables and the area of the circles indicates the variance of each.
+}
+\details{
+There are several custom options that can be added to the plotOpts argument:
+\itemize{
+  \item precision (400) - the number of points to use to draw the circles
+  \item axes (FALSE) - whether to draw the (arbitrary) axes
+  \item triangle (FALSE) - only available with 3 vars: whether to draw a
+  triangle between the centers of the circles
+}
+}
+\examples{
+set.seed(147289)
+x <- rnorm(100)
+y <- 0.5*x+rnorm(100, 0.25)
+vennvis(x, y)
+
+z <- 0.3*x+0.4*y+rnorm(100, 0.15)
+vennvis(x, y, z)
+
 }

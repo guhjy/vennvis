@@ -6,8 +6,9 @@
 #'
 #' @export
 print.vennvis <- function(x, ...) {
-  cat("VennVis Object\ncall: ")
+  cat("VennVis Object\n----------\ncall: ")
   print(attr(x, "call"))
+  cat("----------\n")
   str(x, give.attr = FALSE,
       give.head = FALSE,
       no.list = TRUE)
@@ -43,13 +44,22 @@ plot.vennvis <- function(x, ...) {
     lines(x = vv$radii$y*cos(theta) + vv$centers$y[1],
           y = vv$radii$y*sin(theta) + vv$centers$y[2], lwd = 2)
 
+    # add labels
+    # add labels
+    text(vv$plotpars$labels[1:2],
+         x = c(1.1*vv$radii$x*cos(0.6*pi) + vv$centers$x[1],
+               1.1*vv$radii$y*cos(0.4*pi) + vv$centers$y[1]),
+         y = c(1.1*vv$radii$x*sin(0.6*pi) + vv$centers$x[2],
+               1.1*vv$radii$y*sin(0.4*pi) + vv$centers$y[2]),
+         pos = c(2, 4), cex = 2)
+
   } else {
 
     plot(0, 0, type = "n",
          xlim = c(-1.5*vv$radii$x,
                   0.5*vv$radii$x + vv$centers$y[1] + vv$radii$y),
          ylim = c(-0.5*vv$radii$x + vv$centers$z[2] - vv$radii$z,
-                  1.5*vv$radii$x),
+                  max(1.5*vv$radii$x, 0.5*vv$radii$x + vv$radii$y)),
          asp = 1, bty = "L", axes = vv$plotpars$axes, xlab = "", ylab = "")
 
     # draw circles
@@ -59,6 +69,16 @@ plot.vennvis <- function(x, ...) {
           y = vv$radii$y*sin(theta) + vv$centers$y[2], lwd = 2)
     lines(x = vv$radii$z*cos(theta) + vv$centers$z[1],
           y = vv$radii$z*sin(theta) + vv$centers$z[2], lwd = 2)
+
+    # add labels
+    text(vv$plotpars$labels[1:3],
+         x = c(1.1*vv$radii$x*cos(0.75*pi) + vv$centers$x[1],
+               1.1*vv$radii$y*cos(0.25*pi) + vv$centers$y[1],
+               1.1*vv$radii$z*cos(1.75*pi) + vv$centers$z[1]),
+         y = c(1.1*vv$radii$x*sin(0.75*pi) + vv$centers$x[2],
+               1.1*vv$radii$y*sin(0.25*pi) + vv$centers$y[2],
+               1.1*vv$radii$z*sin(1.75*pi) + vv$centers$z[2]),
+         pos = c(2, 4, 4), cex = 2)
 
     # triangle
     if (vv$plotpars$triangle) {

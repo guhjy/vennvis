@@ -3,34 +3,58 @@
 #' Using a venn diagram where the overlap indicates the covariance between two
 #' variables and the area of the circles indicates the variance of each.
 #'
-#' @param x a base variable (vector)
-#' @param y a comparison variable (vector)
-#' @param z an optional third variable (vector)
+#' @param x a base variable or a matrix/data frame with 2/3 variables
+#' @param y a comparison variable
+#' @param z an optional third variable
 #' @param scale whether to scale the variables
 #' @param plot whether to plot, default TRUE
-#' @param precision the precision of the drawing
-#' @param axes whether to plot axes
-#' @param triangle whether to add a triangle to the plot (only for 3 vars)
+#' @param plotOpts named list of custom plot options; see details
 #'
+#' @details
+#' There are several custom options that can be added to the plotOpts argument:
+#' \itemize{
+#'   \item precision (400) - the number of points to use to draw the circles
+#'   \item axes (FALSE) - whether to draw the (arbitrary) axes
+#'   \item triangle (FALSE) - only available with 3 vars: whether to draw a
+#'   triangle between the centers of the circles
+#' }
+#'
+#' @examples
+#' set.seed(147289)
+#' x <- rnorm(100)
+#' y <- 0.5*x+rnorm(100, 0.25)
+#' vennvis(x, y)
+#'
+#' @examples
+#' z <- 0.3*x+0.4*y+rnorm(100, 0.15)
+#' vennvis(x, y, z)
 #'
 #' @export
 #'
-vennvis <- function(x, y, z, scale = FALSE,
-                    plot = TRUE, precision = 400, axes = FALSE,
-                    triangle = FALSE) {
+vennvis <- function(x, y, z, scale = FALSE, plot = TRUE, plotOpts) {
+  # if x is a data
+  if (is.data.frame(x) || is.matrix(x)) {
+    if (ncol(x) < 2 || ncol(x) > 3) {
+      stop("Error: data has incorrect number of columns")
+    }
+    x <- x[,1]
+    y <- x[,2]
+    if (ncol(x) == 3) z <- x[,3]
+  }
+
   # check for errors in the arguments
-  .args <- as.list(match.call()[-1])
-  check <- do.call(checkArgs, .args)
-  if (!is.na(check)) {
-    stop(check)
+  msg <- checkArgs()
+  if (!is.na(msg)) {
+    stop(msg)
   }
 
   vv <- calcVennVis(x, y, z, scale, match.call())
-  vv$plotpars <- list(
-    precision = precision,
-    axes = axes,
-    triangle = triangle
-  )
+
+  if (!missing(plotOpts)) {
+    vv$plotpars <- parsePlotOpts(plotOpts)
+  } else {
+    vv$plotpars <- parsePlotOpts(list())
+  }
 
   if (plot) {
     plot(vv)
@@ -76,6 +100,9 @@ calcVennVis <- function(x, y, z, scale = FALSE, call = NULL) {
     if (scale) {
       x <- as.vector(scale(x))
       y <- as.vector(scale(y))
+    } else {
+      x <- as.vector(x)
+      y <- as.vector(y)
     }
 
     # calculate overlap and radii
@@ -100,6 +127,10 @@ calcVennVis <- function(x, y, z, scale = FALSE, call = NULL) {
       x <- as.vector(scale(x))
       y <- as.vector(scale(y))
       z <- as.vector(scale(z))
+    } else {
+      x <- as.vector(x)
+      y <- as.vector(y)
+      z <- as.vector(z)
     }
 
     # calculate overlaps and radii
@@ -156,8 +187,36 @@ calcVennVis <- function(x, y, z, scale = FALSE, call = NULL) {
 #' @keywords internal
 #'
 checkArgs <- function(...) {
-  # TODO: argument checking
+  pf <- parent.frame()
+  if (!is.logical(pf[["plot"]])) return("Plot argument needs TRUE or FALSE")
+  if (!is.logical(pf[["scale"]])) return("Scale argument needs TRUE or FALSE")
+  if (!is.numeric(pf[["x"]])) return("Enter numeric var for x")
+  if (!is.numeric(pf[["y"]])) return("Enter numeric var for y")
+  if (!is.name(pf[["z"]]) && !is.numeric(pf[["z"]])) {
+    return("Enter numeric var for z")
+  }
   return(NA)
 }
 
+
+#' Plot option parsing
+#'
+#' @keywords internal
+#'
+parsePlotOpts <- function(opts) {
+  defaultOpts <- list(
+    precision = 400,
+    axes = FALSE,
+    triangle = FALSE,
+    labels = c("X", "Y", "Z")
+  )
+  if (!is.list(opts)) {
+    warning("Options not provided as list, falling back to default opts.")
+    return(defaultOpts)
+  }
+  for (n in names(defaultOpts)) {
+    if (is.null(opts[[n]])) opts[[n]] <- defaultOpts[[n]]
+  }
+  return(opts)
+}
 
