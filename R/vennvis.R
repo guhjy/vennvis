@@ -72,6 +72,8 @@ vennvis <- function(x, y, z, scale = FALSE, plot = TRUE, plotOpts) {
 
 #' Distance calculation function
 #'
+#' @importFrom stats cov sd
+#'
 #' @keywords internal
 #'
 calcDist <- function(rx, ry, cov, precision = 1000) {

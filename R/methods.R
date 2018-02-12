@@ -3,6 +3,7 @@
 #' @param x a vennvis object returned from vennvis() call
 #' @param ... any other args
 #'
+#' @importFrom utils str
 #'
 #' @export
 print.vennvis <- function(x, ...) {
@@ -19,6 +20,8 @@ print.vennvis <- function(x, ...) {
 #'
 #' @param x a vennvis object returned from vennvis() call
 #' @param ... any other args
+#'
+#' @importFrom graphics lines par plot points text
 #'
 #' @export
 plot.vennvis <- function(x, ...) {
