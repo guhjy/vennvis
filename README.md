@@ -17,13 +17,13 @@ y <- 0.5*x+rnorm(100, 0.25)
 vennvis(x, y)
 ```
 
-![](example.png)
+<p align="center"><img src="example.png" width = "65%"></img></p>
 
 ```r
 z <- 0.3*x+0.4*y+rnorm(100, 0.15)
 vennvis(x, y, z)
 ```
-![](example2.png)
+<p align="center"><img src="example2.png" width = "65%"></img></p>
 
 
 # Ok cool, what's next?
