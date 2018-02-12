@@ -32,14 +32,15 @@
 #' @export
 #'
 vennvis <- function(x, y, z, scale = FALSE, plot = TRUE, plotOpts) {
-  # if x is a data
+  # if x is a data frame
   if (is.data.frame(x) || is.matrix(x)) {
     if (ncol(x) < 2 || ncol(x) > 3) {
-      stop("Error: data has incorrect number of columns")
+      stop("Data has ", ncol(x), " cols. Only 2/3 cols allowed!")
     }
-    x <- x[,1]
+    labs <- colnames(x)
     y <- x[,2]
     if (ncol(x) == 3) z <- x[,3]
+    x <- x[,1]
   }
 
   # check for errors in the arguments
@@ -51,9 +52,14 @@ vennvis <- function(x, y, z, scale = FALSE, plot = TRUE, plotOpts) {
   vv <- calcVennVis(x, y, z, scale, match.call())
 
   if (!missing(plotOpts)) {
+    if (exists("labs") && is.null(plotOpts[["labels"]])) {
+      plotOpts[["labels"]] <- labs
+    }
     vv$plotpars <- parsePlotOpts(plotOpts)
   } else {
-    vv$plotpars <- parsePlotOpts(list())
+    l <- list()
+    if (exists("labs")) l[["labels"]] <- labs
+    vv$plotpars <- parsePlotOpts(l)
   }
 
   if (plot) {
