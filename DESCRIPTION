@@ -3,7 +3,7 @@ Type: Package
 Title: Venn Visualisation of Variable Variances
 Version: 0.1.0
 Author: Erik-Jan van Kesteren
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Erik-Jan van Kesteren <e.vankesteren1@uu.nl>
 Description: Simple function for venn diagram visualisation of two variables.
 License: MIT + file LICENSE
 Encoding: UTF-8

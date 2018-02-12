@@ -205,7 +205,7 @@ checkArgs <- function(...) {
 #'
 parsePlotOpts <- function(opts) {
   defaultOpts <- list(
-    precision = 400,
+    precision = 1000,
     axes = FALSE,
     triangle = FALSE,
     labels = c("X", "Y", "Z")
